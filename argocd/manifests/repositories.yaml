@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: "argo-repo"
+  namespace: argocd
+  annotations: {}
+  labels:
+    argocd.argoproj.io/secret-type: repository
+
+springData:
+  type: git
+  url: https://github.com/anilbolat/spring-boot-microservices
