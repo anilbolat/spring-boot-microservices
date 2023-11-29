@@ -8,6 +8,6 @@ metadata:
   labels:
     argocd.argoproj.io/secret-type: repository
 
-springData:
+stringData:
   type: git
   url: https://github.com/anilbolat/spring-boot-microservices
