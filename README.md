@@ -10,3 +10,32 @@ docker-compose exec kafka kafka-console-consumer.sh --topic prod.orders.shipped 
 
 ## producer
 docker-compose exec kafka kafka-console-producer.sh --topic prod.orders.shipped --broker-list kafka:9092
+
+
+# argocd
+helm repo add argo https://argoproj.github.io/argo-helm
+helm install argocd argo/argo-cd -n argocd --create-namespace
+
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+kubectl port-forward service/argocd-server -n argocd 8090:443
+
+kubectl apply -f argocd/manifests/repositories.yaml
+kubectl apply -f argocd/manifests/projects.yaml
+kubectl apply -f argocd/manifests/applications.yaml
+
+
+
+# install vault
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm install vault hashicorp/vault -n vault --create-namespace
+
+
+# install external-secrets
+helm repo add external-secrets https://charts.external-secrets.io
+helm install external-secrets external-secrets/external-secrets --version "${HELM_CHART_VERSION}" --namespace=external-secrets --create-namespace --set installCRDs=true
+
+# ClusterSecretStore
+kubectl apply -f vault/secret-store.yaml
+
+
