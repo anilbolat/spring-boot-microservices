@@ -16,6 +16,7 @@ docker-compose exec kafka kafka-console-producer.sh --topic prod.orders.shipped 
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd -n argocd --create-namespace
 
+## to get pwd
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
 kubectl port-forward service/argocd-server -n argocd 8090:443
@@ -37,5 +38,14 @@ helm install external-secrets external-secrets/external-secrets --version "${HEL
 
 # ClusterSecretStore
 kubectl apply -f vault/secret-store.yaml
+
+# vault port forward to 8200:8200
+
+
+# configuration of vault, secret store and external secret
+namespace vault for all now.
+kubectl apply -f vault/vault-secret.yaml
+kubectl apply -f vault/secret-store.yaml
+kubectl apply -f vault/external-secret.yaml
 
 
