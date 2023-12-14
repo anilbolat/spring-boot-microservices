@@ -49,3 +49,18 @@ kubectl apply -f vault/secret-store.yaml
 kubectl apply -f vault/external-secret.yaml
 
 
+# apisix - openid plugin
+{
+"client_id": "order",
+"client_secret": "AWMhRNWKJpNxyF7wiJoQlrfcKW3nduVW",
+"discovery": "http://keycloak.default.svc.cluster.local/realms/apisix/.well-known/openid-configuration",
+"bearer_only": true,
+"realm": "apisix",
+"redirect_uri": "http://localhost:9080/auth/callback",
+"logout_path": "http://localhost:9080/auth/logout"
+}
+
+# generate token on keycloak
+curl -s -XPOST "http://localhost:8080/realms/apisix/protocol/openid-connect/token" \
+-d "grant_type=password&username=order&client_id=order&client_secret=AWMhRNWKJpNxyF7wiJoQlrfcKW3nduVW&password=pwd" | jq
+
