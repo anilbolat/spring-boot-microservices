@@ -1,3 +1,4 @@
+# database postgres
 #docker run --name microservices -p 5435:5432 -e POSTGRES_PASSWORD=s3cr3t -d postgres:12-alpine
 
 # kafka
@@ -26,7 +27,6 @@ kubectl apply -f argocd/manifests/projects.yaml
 kubectl apply -f argocd/manifests/applications.yaml
 
 
-
 # install vault
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm install vault hashicorp/vault -n vault --create-namespace
@@ -49,7 +49,11 @@ kubectl apply -f vault/secret-store.yaml
 kubectl apply -f vault/external-secret.yaml
 
 
-# apisix - openid plugin
+# apisix - api gateway
+helm install apisix apisix/apisix --create-namespace  --namespace apisix
+helm install apisix-dashboard apisix/apisix-dashboard --create-namespace --namespace apisix
+
+## add route /order and info below is for openid plugin
 {
 "client_id": "order",
 "client_secret": "AWMhRNWKJpNxyF7wiJoQlrfcKW3nduVW",
@@ -60,7 +64,18 @@ kubectl apply -f vault/external-secret.yaml
 "logout_path": "http://localhost:9080/auth/logout"
 }
 
-# generate token on keycloak
+## upstream
+order.argocd.svc.cluster.local:8080
+
+# keycloak - identity management
+helm install keycloak oci://registry-1.docker.io/bitnamicharts/keycloak
+## create a user named order
+## create a client named order
+## generate token on keycloak
 curl -s -XPOST "http://localhost:8080/realms/apisix/protocol/openid-connect/token" \
 -d "grant_type=password&username=order&client_id=order&client_secret=AWMhRNWKJpNxyF7wiJoQlrfcKW3nduVW&password=pwd" | jq
 
+
+# test
+port forward apisix 9080:9080
+curl -v -XGET -H "Authorization: Bearer PUT TOKEN HERE" http://localhost:9080/test | jq
