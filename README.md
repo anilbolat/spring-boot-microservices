@@ -87,7 +87,10 @@ Micrometer (lib to capture metrics) -> Prometheus (db)
 ## dependencies
 spring-boot-starter-actuator -> exposes metrics API to be collected by Prometheus (scraping).
 micrometer-registry-prometheus -> allows metrics to be exposed in a format that will be understood by Prometheus.
-spring-boot-starter-aop -> Micrometer times methods need. It depends on AspectJ.
+spring-boot-starter-aop -> Micrometer times methods need and depends on AspectJ. For using @Observed on class and enabled @ObservedAspect.
+micrometer-tracing-bridge-otel -> For Tracing Context Propagation with Micrometer Tracing
+opentelemetry-exporter-zipkin -> For Latency Visualization to send data for traces and spans.
+loki-logback-appender:1.3.2  -> Sends logs to Loki
 
 
 ## config
