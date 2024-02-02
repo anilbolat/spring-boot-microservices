@@ -79,3 +79,34 @@ curl -s -XPOST "http://localhost:8080/realms/apisix/protocol/openid-connect/toke
 # test
 port forward apisix 9080:9080
 curl -v -XGET -H "Authorization: Bearer PUT TOKEN HERE" http://localhost:9080/test | jq
+
+
+# instrumentation & tracing
+Micrometer (lib to capture metrics) -> Prometheus (db)
+
+## dependencies
+spring-boot-starter-actuator -> exposes metrics API to be collected by Prometheus (scraping).
+micrometer-registry-prometheus -> allows metrics to be exposed in a format that will be understood by Prometheus.
+spring-boot-starter-aop -> Micrometer times methods need. It depends on AspectJ.
+
+
+## config
+management.endpoints.web.exposure.include=health,info,prometheus -> in application.properties.  (/actuator/prometheus)
+management.tracing.sampling.probability=1.0
+management.metrics.distribution.percentiles-histogram.http.server.requests=true
+logging.pattern.level="%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+Prometheus is a time-series database. Polls your application for its latest metrics data – this is known as scraping.
+
+Micrometer is a set of libraries for Java that allow you to capture metrics and expose them to several different tools – including Prometheus.
+Micrometer acts as a facade – an intermediate layer – between your application and some of the more popular monitoring tools. 
+This makes it easier to publish metrics to Prometheus and other tools like Elastic, Datadog or Dynatrace.
+
+promql
+
+Grafana uses Prometheus as a data source to visualize the data on dashboards.
+
+
+# feign client
+https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/
